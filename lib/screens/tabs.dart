@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/models/meal.dart';
 import 'package:recipe/screens/Categories.dart';
 import 'package:recipe/screens/Meals.dart';
 
@@ -20,14 +21,45 @@ class _TabsScreen extends State<TabsScreen> {
     });
   }
 
+  final List<Meal> _favoritesMeal = [];
+
+  void _showInfoMessage(String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),
+    ));
+  }
+
+  void _toggleMealsFavorites(Meal meal) {
+    var isAlreadyExits = _favoritesMeal.contains(meal);
+
+    if (isAlreadyExits) {
+      setState(() {
+        _favoritesMeal.remove(meal);
+        _showInfoMessage('Meal is Remove from Favorite');
+      });
+    } else {
+      setState(() {
+        _favoritesMeal.add(meal);
+        _showInfoMessage('Meal is added to Favorite');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget activePage = const CategoriesScreen();
+    Widget activePage = CategoriesScreen(
+      onToggleFavorite: _toggleMealsFavorites,
+    );
     var currentTitle = 'Categories';
 
     if (_selectedIndex == 1) {
       currentTitle = 'Favorites';
-      activePage = const MealsScreen(meals: [], title: 'some title');
+      activePage = MealsScreen(
+        meals: _favoritesMeal,
+        onToggleFavorite: _toggleMealsFavorites,
+      );
     }
 
     return Scaffold(
@@ -37,6 +69,7 @@ class _TabsScreen extends State<TabsScreen> {
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
+        currentIndex: _selectedIndex,
         items: const [
           BottomNavigationBarItem(
               icon: Icon(
@@ -45,7 +78,7 @@ class _TabsScreen extends State<TabsScreen> {
               label: 'Catagories'),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.set_meal,
+                Icons.star,
               ),
               label: 'Favorites'),
         ],
