@@ -70,7 +70,7 @@ class MealsItem extends StatelessWidget {
                         children: [
                           MealsItemsTrait(
                               icon: Icons.schedule,
-                              label: meal.duration.toString()),
+                              label: '${meal.duration.toString()} min'),
                           const SizedBox(
                             width: 12,
                           ),
